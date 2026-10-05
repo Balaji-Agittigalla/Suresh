@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Kewin Melshack — Portfolio</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--ice:#7DD8F8;--ice-b:#A8E8FF;--ice-d:#4AB8E8;--bg:#050810;--bg2:#080D1A;--bg3:#0D1525;--text:#E8F4FC;--text2:#9BB8CC;--border:#1A2A3A}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;overflow-x:hidden;cursor:none}
+canvas#stars{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+#cursor{position:fixed;width:12px;height:12px;background:var(--ice);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .1s;box-shadow:0 0 10px var(--ice),0 0 20px rgba(125,216,248,.5)}
+#cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(125,216,248,.6);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .12s ease,top .12s ease,width .2s,height .2s}
+nav{position:fixed;top:0;width:100%;z-index:100;background:rgba(5,8,16,.9);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:0 2rem}
+.nav-inner{max-width:1150px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;height:62px}
+.nav-logo{font-size:1rem;font-weight:800;color:var(--ice);letter-spacing:3px;text-transform:uppercase}
+.nav-links{display:flex;gap:1.5rem;list-style:none}
+.nav-links a{color:var(--text2);text-decoration:none;font-size:.73rem;letter-spacing:1.5px;text-transform:uppercase;transition:color .3s}
+.nav-links a:hover{color:var(--ice)}
+section{position:relative;z-index:1}
+.container{max-width:1150px;margin:0 auto;padding:0 2rem}
+#hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:80px 2rem 2rem}
+.hero-inner{display:flex;flex-direction:column;align-items:center}
+.hero-photo-wrap{position:relative;margin-bottom:2rem}
+.hero-photo{width:140px;height:140px;border-radius:50%;object-fit:cover;object-position:top;border:2px solid var(--ice);display:block}
+.hero-ring{position:absolute;border-radius:50%;border:1px solid rgba(125,216,248,.3);animation:pulseR 3s ease-in-out infinite}
+.hero-ring:nth-child(1){inset:-8px;animation-delay:0s}
+.hero-ring:nth-child(2){inset:-18px;animation-delay:.8s;border-color:rgba(125,216,248,.15)}
+@keyframes pulseR{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.05);opacity:.5}}
+.hero-tag{font-size:.73rem;letter-spacing:4px;color:var(--ice);text-transform:uppercase;margin-bottom:1rem;opacity:.8}
+.hero-name{font-size:clamp(2.4rem,5.5vw,4.8rem);font-weight:800;line-height:1.05;margin-bottom:.6rem;letter-spacing:-1px}
+.hero-name span{color:var(--ice)}
+.hero-tagline{font-size:.8rem;color:var(--text2);letter-spacing:1px;margin-bottom:1rem;font-style:italic;opacity:.75}
+.typewriter{font-size:clamp(.9rem,2vw,1.25rem);color:var(--text2);margin-bottom:2.5rem;min-height:2rem}
+.cursor-txt{display:inline-block;width:2px;height:.9em;background:var(--ice);margin-left:2px;vertical-align:middle;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.btn{padding:.7rem 1.8rem;border-radius:4px;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;text-decoration:none;cursor:none;transition:all .3s;font-weight:700;display:inline-block}
+.btn-primary{background:var(--ice);color:#050810;border:none}
+.btn-primary:hover{background:var(--ice-b);transform:translateY(-2px)}
+.btn-outline{background:transparent;color:var(--ice);border:1px solid var(--ice)}
+.btn-outline:hover{background:rgba(125,216,248,.1);transform:translateY(-2px)}
+.scroll-ind{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem;color:var(--text2);font-size:.68rem;letter-spacing:2px;animation:floatY 2s ease-in-out infinite}
+@keyframes floatY{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-8px)}}
+.scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--ice),transparent)}
+.sec-head{text-align:center;margin-bottom:4rem}
+.sec-label{font-size:.7rem;letter-spacing:4px;color:var(--ice);text-transform:uppercase;margin-bottom:.75rem}
+.sec-title{font-size:clamp(1.7rem,3.5vw,2.6rem);font-weight:700;line-height:1.2}
+.sec-title span{color:var(--ice)}
+.divider{width:60px;height:2px;background:var(--ice);margin:1.5rem auto 0;opacity:.6}
+#about{padding:8rem 0}
+.about-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:4rem;align-items:center}
+.about-img-box{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+.about-img-box img{width:100%;display:block;object-fit:cover;object-position:top;min-height:380px}
+.about-img-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(5,8,16,.8) 0%,transparent 50%);pointer-events:none}
+.corner{position:absolute;width:22px;height:22px;border-color:var(--ice);border-style:solid;opacity:.7;z-index:2}
+.ctl{top:10px;left:10px;border-width:2px 0 0 2px}
+.ctr{top:10px;right:10px;border-width:2px 2px 0 0}
+.cbl{bottom:10px;left:10px;border-width:0 0 2px 2px}
+.cbr{bottom:10px;right:10px;border-width:0 2px 2px 0}
+.about-text p{color:var(--text2);line-height:1.9;margin-bottom:1.2rem;font-size:.92rem}
+.about-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem;margin-top:2rem}
+.stat-box{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:1rem;text-align:center}
+.stat-num{font-size:1.7rem;font-weight:800;color:var(--ice)}
+.stat-lbl{font-size:.66rem;color:var(--text2);letter-spacing:1px;margin-top:.2rem}
+#skills{padding:8rem 0;background:var(--bg2)}
+.skills-wrap{display:grid;grid-template-columns:1fr 1fr;gap:3rem}
+.sk-cat-title{font-size:.7rem;letter-spacing:3px;color:var(--ice);text-transform:uppercase;margin-bottom:1.4rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+.skill-item{margin-bottom:1.3rem}
+.skill-top{display:flex;justify-content:space-between;margin-bottom:.45rem}
+.skill-name{font-size:.85rem;color:var(--text)}
+.skill-pct{font-size:.75rem;color:var(--ice)}
+.skill-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.skill-fill{height:100%;background:linear-gradient(to right,var(--ice-d),var(--ice));border-radius:2px;width:0;transition:width 1.6s cubic-bezier(.4,0,.2,1)}
+.lang-chips{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.5rem}
+.chip{padding:.4rem 1rem;border:1px solid var(--ice);border-radius:20px;font-size:.74rem;color:var(--ice)}
+.chip.fl{background:rgba(125,216,248,.08)}
+.soft-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.5rem}
+.soft-tag{padding:.32rem .85rem;background:var(--bg3);border:1px solid var(--border);border-radius:4px;font-size:.73rem;color:var(--text2)}
+#ai-skills{padding:8rem 0}
+.ai-intro{text-align:center;color:var(--text2);font-size:.88rem;max-width:600px;margin:0 auto 3rem;line-height:1.8}
+.ai-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.2rem}
+.ai-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:1.3rem 1.1rem;transition:all .3s;position:relative;overflow:hidden}
+.ai-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,var(--ice-d),var(--ice));opacity:0;transition:opacity .3s}
+.ai-card:hover{border-color:var(--ice);transform:translateY(-4px)}
+.ai-card:hover::before{opacity:1}
+.ai-logo{width:36px;height:36px;object-fit:contain;margin-bottom:.7rem;border-radius:6px}
+.ai-logo-fallback{width:36px;height:36px;font-size:1.6rem;margin-bottom:.7rem;display:flex;align-items:center;justify-content:center}
+.ai-name{font-size:.88rem;font-weight:600;color:var(--text);margin-bottom:.22rem}
+.ai-cat{font-size:.66rem;letter-spacing:2px;color:var(--ice);text-transform:uppercase;margin-bottom:.7rem}
+.ai-bar{height:2px;background:var(--border);border-radius:2px;overflow:hidden}
+.ai-fill{height:100%;background:linear-gradient(to right,var(--ice-d),var(--ice));border-radius:2px;width:0;transition:width 1.6s cubic-bezier(.4,0,.2,1)}
+#portfolio{padding:8rem 0;background:var(--bg2)}
+.port-filter{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem}
+.filter-btn{padding:.38rem 1.1rem;border:1px solid var(--border);border-radius:20px;font-size:.73rem;color:var(--text2);background:transparent;cursor:none;transition:all .3s;letter-spacing:1px}
+.filter-btn.active,.filter-btn:hover{border-color:var(--ice);color:var(--ice);background:rgba(125,216,248,.06)}
+.port-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.5rem}
+.port-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:border-color .3s}
+.port-card:hover{border-color:var(--ice)}
+.video-wrap{position:relative;width:100%;padding-top:56.25%;background:#000}
+.video-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none}
+.video-thumb{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;cursor:none;overflow:hidden}
+.video-thumb img.yt-thumb{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .4s,opacity .3s;opacity:.85}
+.video-thumb:hover img.yt-thumb{transform:scale(1.05);opacity:1}
+.play-btn{position:relative;z-index:2;width:58px;height:58px;border-radius:50%;background:rgba(5,8,16,.75);border:2px solid var(--ice);display:flex;align-items:center;justify-content:center;transition:all .3s;box-shadow:0 0 20px rgba(125,216,248,.3)}
+.play-btn svg{width:18px;height:18px;fill:var(--ice);margin-left:4px}
+.video-thumb:hover .play-btn{background:rgba(125,216,248,.25);transform:scale(1.1);box-shadow:0 0 30px rgba(125,216,248,.5)}
+.thumb-label{position:absolute;bottom:10px;left:12px;font-size:.62rem;letter-spacing:2px;color:var(--ice);text-transform:uppercase;opacity:.9;z-index:2;text-shadow:0 1px 4px rgba(0,0,0,.8)}
+.static-thumb{position:relative;width:100%;padding-top:56.25%;overflow:hidden}
+.static-thumb-inner{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.5rem}
+.port-info{padding:1.15rem}
+.port-tag{font-size:.65rem;letter-spacing:2px;color:var(--ice);text-transform:uppercase;margin-bottom:.38rem;opacity:.8}
+.port-title{font-size:.93rem;font-weight:600;color:var(--text);margin-bottom:.38rem}
+.port-desc{font-size:.78rem;color:var(--text2);line-height:1.65;margin-bottom:.7rem}
+.port-link{font-size:.7rem;letter-spacing:1.5px;color:var(--ice);text-decoration:none;text-transform:uppercase;border-bottom:1px solid rgba(125,216,248,.3);padding-bottom:1px;transition:border-color .3s}
+.port-link:hover{border-color:var(--ice)}
+#clients{padding:8rem 0}
+.clients-logo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem}
+.client-logo-box{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:1.4rem 1rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6rem;transition:all .3s;min-height:95px}
+.client-logo-box:hover{border-color:var(--ice);transform:translateY(-3px)}
+.client-logo-box img{max-width:90px;max-height:44px;object-fit:contain;filter:brightness(0) invert(1);opacity:.7;transition:opacity .3s}
+.client-logo-box:hover img{opacity:1}
+.logo-placeholder{width:48px;height:48px;border-radius:6px;background:rgba(125,216,248,.06);border:1px dashed rgba(125,216,248,.4);display:flex;align-items:center;justify-content:center;font-size:.58rem;letter-spacing:1px;color:var(--ice);text-align:center}
+.client-name{font-size:.73rem;color:var(--text2);letter-spacing:.5px;text-align:center}
+#experience{padding:8rem 0;background:var(--bg2)}
+.timeline{position:relative;padding-left:2rem}
+.timeline::before{content:'';position:absolute;left:0;top:0;bottom:0;width:1px;background:var(--border)}
+.tl-item{position:relative;margin-bottom:3rem;padding-left:2rem}
+.tl-item::before{content:'';position:absolute;left:-2rem;top:6px;width:10px;height:10px;border-radius:50%;background:var(--ice);border:2px solid var(--bg2);box-shadow:0 0 12px rgba(125,216,248,.5)}
+.tl-period{font-size:.69rem;letter-spacing:2px;color:var(--ice);text-transform:uppercase;margin-bottom:.35rem}
+.tl-role{font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:.2rem}
+.tl-company{font-size:.85rem;color:var(--text2);margin-bottom:.65rem}
+.tl-pts{list-style:none}
+.tl-pts li{font-size:.81rem;color:var(--text2);padding:.27rem 0 .27rem 1rem;position:relative;line-height:1.65}
+.tl-pts li::before{content:'›';position:absolute;left:0;color:var(--ice)}
+#contact{padding:8rem 0}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start}
+.contact-info h3{font-size:1.2rem;font-weight:600;margin-bottom:1rem}
+.contact-info p{color:var(--text2);line-height:1.85;margin-bottom:2rem;font-size:.86rem}
+.c-item{display:flex;align-items:center;gap:1rem;margin-bottom:1rem;padding:.82rem 1rem;background:var(--bg3);border:1px solid var(--border);border-radius:6px;text-decoration:none;transition:border-color .3s}
+.c-item:hover{border-color:var(--ice)}
+.c-icon{width:34px;height:34px;border-radius:50%;background:rgba(125,216,248,.08);border:1px solid var(--ice);display:flex;align-items:center;justify-content:center;font-size:.82rem;flex-shrink:0}
+.c-detail label{font-size:.6rem;letter-spacing:2px;color:var(--ice);text-transform:uppercase;display:block}
+.c-detail span{font-size:.84rem;color:var(--text)}
+.cf{display:flex;flex-direction:column;gap:1rem}
+.cf-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.fg{display:flex;flex-direction:column;gap:.3rem}
+.fg label{font-size:.63rem;letter-spacing:2px;color:var(--ice);text-transform:uppercase}
+.fg input,.fg textarea{background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:.66rem 1rem;color:var(--text);font-size:.85rem;font-family:inherit;transition:border-color .3s;outline:none}
+.fg input:focus,.fg textarea:focus{border-color:var(--ice)}
+.fg textarea{resize:vertical;min-height:115px}
+.cf-btn{background:var(--ice);color:#050810;border:none;padding:.75rem 2rem;border-radius:4px;font-size:.77rem;letter-spacing:2px;text-transform:uppercase;font-weight:700;cursor:none;transition:all .3s;align-self:flex-start}
+.cf-btn:hover{background:var(--ice-b);transform:translateY(-2px)}
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem;text-align:center;position:relative;z-index:1}
+footer p{color:var(--text2);font-size:.75rem;letter-spacing:1px}
+footer span{color:var(--ice)}
+.fade-in{opacity:0;transform:translateY(28px);transition:opacity .8s ease,transform .8s ease}
+.fade-in.visible{opacity:1;transform:translateY(0)}
+@media(max-width:768px){.about-grid,.skills-wrap,.contact-grid{grid-template-columns:1fr}.cf-row{grid-template-columns:1fr}.nav-links{display:none}.port-grid{grid-template-columns:1fr}.about-stats{grid-template-columns:repeat(2,1fr)}}
+</style>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<canvas id="stars"></canvas>
+
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">KM</div>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#ai-skills">AI Tools</a></li>
+      <li><a href="#portfolio">Portfolio</a></li>
+      <li><a href="#clients">Clients</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-photo-wrap">
+      <div class="hero-ring"></div>
+      <div class="hero-ring"></div>
+      <img class="hero-photo" src="https://cdn.shopify.com/s/files/1/0639/3515/2267/files/IMG_0264.heic?v=1774369273" alt="Kewin Melshack">
+    </div>
+    <p class="hero-tag">Bangalore, India · Open to Work</p>
+    <h1 class="hero-name">R. Santos <span>Kewin</span><br>Melshack</h1>
+    <p class="hero-tagline">Visual Alchemist · Blending Cinematic Drone Shots &amp; Bold Designs · Commercial Product Photography</p>
+    <p class="typewriter"><span id="typed"></span><span class="cursor-txt"></span></p>
+    <div class="hero-btns">
+      <a href="#portfolio" class="btn btn-primary">View My Work</a>
+      <a href="#contact" class="btn btn-outline">Get In Touch</a>
+    </div>
+  </div>
+  <div class="scroll-ind"><div class="scroll-line"></div><span>Scroll</span></div>
+</section>
+
+<section id="about">
+  <div class="container">
+    <div class="sec-head fade-in"><p class="sec-label">Who I Am</p><h2 class="sec-title">About <span>Me</span></h2><div class="divider"></div></div>
+    <div class="about-grid fade-in">
+      <div class="about-img-box">
+        <div class="corner ctl"></div><div class="corner ctr"></div><div class="corner cbl"></div><div class="corner cbr"></div>
+        <img src="https://cdn.shopify.com/s/files/1/0639/3515/2267/files/IMG_0264.heic?v=1774369273" alt="Kewin Melshack">
+        <div class="about-img-overlay"></div>
+      </div>
+      <div class="about-text">
+        <p>Creative and versatile <strong style="color:var(--ice)">Visual Alchemist</strong> with hands-on experience in digital creation, cinematography, and GIS mapping. Founder of <strong style="color:var(--ice)">Welkin Productions</strong> — delivering high-impact visual content for diverse clients across film, infrastructure, and brand identity.</p>
+        <p>With over <strong style="color:var(--ice)">6 years at Birdscale Technologies</strong> as a Drone Pilot and R&D Specialist, I combine technical precision with artistic vision — from aerial cinematography on feature films to UAV-based GIS mapping for L&T infrastructure projects.</p>
+        <p>Adept at industry-standard design software, AI content creation tools, and UAV operations. Currently based in <strong style="color:var(--ice)">Bangalore, India</strong> and open to exciting media opportunities.</p>
+        <div class="about-stats">
+          <div class="stat-box"><div class="stat-num">6+</div><div class="stat-lbl">Years Drone Ops</div></div>
+          <div class="stat-box"><div class="stat-num">15+</div><div class="stat-lbl">Clients</div></div>
+          <div class="stat-box"><div class="stat-num">3</div><div class="stat-lbl">Languages</div></div>
+          <div class="stat-box"><div class="stat-num">2</div><div class="stat-lbl">Companies</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="container">
+    <div class="sec-head fade-in"><p class="sec-label">What I Know</p><h2 class="sec-title">Skills &amp; <span>Software</span></h2><div class="divider"></div></div>
+    <div class="skills-wrap fade-in">
+      <div>
+        <p class="sk-cat-title">Design &amp; Video Editing</p>
+        <div class="skill-item"><div class="skill-top"><span class="skill-name">Adobe Premiere Pro</span><span class="skill-pct">95%</span></div><div class="skill-bar"><div class="skill-fill" data-width="95"></div></div></div>
+        <div class="skill-item"><div class="skill-top"><span class="skill-name">Adobe After Effects</span><span class="skill-pct">90%</span></div><div class="skill-bar"><div class="skill-fill" data-width="90"></div></div></div>
+        <div class="skill-item"><div class="skill-top"><span class="skill-name">Adobe Photoshop</span><span class="skill-pct">92%</span></div><div class="skill-bar"><div class="skill-fill" data-width="92"></div></div></div>
+        <div class="skill-item"><div class="skill-top"><span class="skill-name">Adobe Illustrator</span><span class="skill-pct">88%</span></div><div class="skill-bar"><div class="skill-fill" data-width="88"></div></div></div>
+        <div class="skill-item"><div class="skill-top"><span class="skill-name">Adobe Lightroom</span><span class="skill-pct">85%</span></div><div class="skill-bar"><div class="skill-fill" data-width="85"></div></div></div>
+        <div class="skill-item"><div class="skill-top"><span class="skill-name">Adobe InDesign</span><span class="skill-pct">80%</span></div><div class="skill-bar"><div class="skill-fill" data-width="80"></div></div></div>
+        <div class="skill-item"><div class="skill-top"><span class="skill-name">Cinema 4D</span><span class="skill-pct">80%</span></div><div class="skill-bar"><div class="skill-fill" data-width="80"></div></div></div>
+        <p class="sk-cat-title" style="margin-top:2rem">3D &amp; Mapping Tools</p>
+        <div class="skill-item"><div class="skill-top"><span class="skill-name">Pix4D</span><span class="skill-pct">90%</span></div><div class="skill-bar"><div class="skill-fill" data-width="90"></div></div></div>
+        <div class="skill-item"><div class="skill-top"><span class="skill-name">AutoCAD / Civil 3D</span><span class="skill-pct">82%</span></div><div class="skill-bar"><div class="skill-fill" data-width="82"></div></div></div>
+        <div class="skill-item"><div class="skill-top"><span class="skill-name">GIS / Field Mapping</span><span class="skill-pct">85%</span></div><div class="skill-bar"><div class="skill-fill" data-width="85"></div></div></div>
+      </div>
+      <div>
+        <p class="sk-cat-title">Creative &amp; UAV Skills</p>
+        <div class="skill-item"><div class="skill-top"><span class="skill-name">UAV / Drone Piloting</span><span class="skill-pct">98%</span></div><div class="skill-bar"><div class="skill-fill" data-width="98"></div></div></div>
+        <div class="skill-item"><div class="skill-top"><span class="skill-name">Aerial Cinematography</span><span class="skill-pct">95%</span></div><div class="skill-bar"><div class="skill-fill" data-width="95"></div></div></div>
+        <div class="skill-item"><div class="skill-top"><span class="skill-name">Motion Graphics</span><span class="skill-pct">90%</span></div><div class="skill-bar"><div class="skill-fill" data-width="90"></div></div></div>
+        <div class="skill-item"><div class="skill-top"><span class="skill-name">Digital Photography</span><span class="skill-pct">88%</span></div><div class="skill-bar"><div class="skill-fill" data-width="88"></div></div></div>
+        <div class="skill-item"><div class="skill-top"><span class="skill-name">Digital Marketing</span><span class="skill-pct">82%</span></div><div class="skill-bar"><div class="skill-fill" data-width="82"></div></div></div>
+        <div class="skill-item"><div class="skill-top"><span class="skill-name">Social Media Marketing</span><span class="skill-pct">85%</span></div><div class="skill-bar"><div class="skill-fill" data-width="85"></div></div></div>
+        <p class="sk-cat-title" style="margin-top:2rem">Soft Skills</p>
+        <div class="soft-tags">
+          <span class="soft-tag">Project Management</span><span class="soft-tag">Team Management</span><span class="soft-tag">Event Management</span><span class="soft-tag">Business Communication</span><span class="soft-tag">Quick Grasping</span><span class="soft-tag">Analytical Skills</span><span class="soft-tag">Public Relations</span><span class="soft-tag">Advertising</span>
+        </div>
+        <p class="sk-cat-title" style="margin-top:2rem">Languages Known</p>
+        <div class="lang-chips">
+          <div class="chip fl">Tamil — Native</div>
+          <div class="chip fl">English — Fluent</div>
+          <div class="chip">French — Intermediate</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="ai-skills">
+  <div class="container">
+    <div class="sec-head fade-in"><p class="sec-label">Future-Forward</p><h2 class="sec-title">AI Tools &amp; <span>Proficiency</span></h2><div class="divider"></div></div>
+    <p class="ai-intro fade-in">Leveraging the latest AI tools to push creative boundaries — from generative visuals and video synthesis to voice production and intelligent design workflows.</p>
+    <div class="ai-grid fade-in">
+      <div class="ai-card">
+        <img class="ai-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/42dots.svg/120px-42dots.svg.png" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt="Nano Banana">
+        <div class="ai-logo-fallback" style="display:none">🍌</div>
+        <div class="ai-name">Nano Banana Pro</div><div class="ai-cat">AI Video Generation</div><div class="ai-bar"><div class="ai-fill" data-width="88"></div></div>
+      </div>
+      <div class="ai-card">
+        <img class="ai-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Kling_AI_Logo.svg/120px-Kling_AI_Logo.svg.png" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt="Kling">
+        <div class="ai-logo-fallback" style="display:none">🎬</div>
+        <div class="ai-name">Kling 3.0</div><div class="ai-cat">AI Video Synthesis</div><div class="ai-bar"><div class="ai-fill" data-width="90"></div></div>
+      </div>
+      <div class="ai-card">
+        <img class="ai-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Midjourney_Emblem.png/120px-Midjourney_Emblem.png" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt="Midjourney">
+        <div class="ai-logo-fallback" style="display:none">🖼</div>
+        <div class="ai-name">Midjourney</div><div class="ai-cat">AI Image Generation</div><div class="ai-bar"><div class="ai-fill" data-width="92"></div></div>
+      </div>
+      <div class="ai-card">
+        <img class="ai-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Runway_logo.svg/120px-Runway_logo.svg.png" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt="Runway">
+        <div class="ai-logo-fallback" style="display:none">🎞</div>
+        <div class="ai-name">Runway ML</div><div class="ai-cat">AI Video Editing</div><div class="ai-bar"><div class="ai-fill" data-width="85"></div></div>
+      </div>
+      <div class="ai-card">
+        <img class="ai-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/OpenAI_Logo.svg/120px-OpenAI_Logo.svg.png" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt="Sora">
+        <div class="ai-logo-fallback" style="display:none">✨</div>
+        <div class="ai-name">Sora / OpenAI</div><div class="ai-cat">AI Video Generation</div><div class="ai-bar"><div class="ai-fill" data-width="80"></div></div>
+      </div>
+      <div class="ai-card">
+        <img class="ai-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Adobe_Firefly_logo.svg/120px-Adobe_Firefly_logo.svg.png" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt="Firefly">
+        <div class="ai-logo-fallback" style="display:none">🔥</div>
+        <div class="ai-name">Adobe Firefly</div><div class="ai-cat">AI Creative Suite</div><div class="ai-bar"><div class="ai-fill" data-width="88"></div></div>
+      </div>
+      <div class="ai-card">
+        <img class="ai-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/ElevenLabs_logo.svg/120px-ElevenLabs_logo.svg.png" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt="ElevenLabs">
+        <div class="ai-logo-fallback" style="display:none">🔊</div>
+        <div class="ai-name">ElevenLabs</div><div class="ai-cat">AI Voice &amp; Audio</div><div class="ai-bar"><div class="ai-fill" data-width="82"></div></div>
+      </div>
+      <div class="ai-card">
+        <img class="ai-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/120px-ChatGPT_logo.svg.png" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt="ChatGPT">
+        <div class="ai-logo-fallback" style="display:none">🤖</div>
+        <div class="ai-name">ChatGPT / GPT-4</div><div class="ai-cat">AI Language Model</div><div class="ai-bar"><div class="ai-fill" data-width="95"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="portfolio">
+  <div class="container">
+    <div class="sec-head fade-in"><p class="sec-label">My Work</p><h2 class="sec-title">Portfolio <span>Highlights</span></h2><div class="divider"></div></div>
+    <div class="port-filter fade-in">
+      <button class="filter-btn active" onclick="filterPort(this,'all')">All</button>
+      <button class="filter-btn" onclick="filterPort(this,'film')">Film &amp; Video</button>
+      <button class="filter-btn" onclick="filterPort(this,'drone')">Drone</button>
+      <button class="filter-btn" onclick="filterPort(this,'brand')">Branding</button>
+      <button class="filter-btn" onclick="filterPort(this,'ai')">AI Content</button>
+    </div>
+    <div class="port-grid fade-in" id="portGrid">
+
+      <div class="port-card" data-cat="film drone">
+        <div class="video-wrap">
+          <div class="video-thumb" onclick="loadVid(this,'https://www.youtube.com/embed/dLgaw3K9iyM?autoplay=1&si=b8FNWIRlwvrH2C0F')">
+            <img class="yt-thumb" src="https://img.youtube.com/vi/dLgaw3K9iyM/maxresdefault.jpg" alt="Sathur">
+            <div class="play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+            <span class="thumb-label">Feature Film · Drone Cinematography</span>
+          </div>
+        </div>
+        <div class="port-info">
+          <p class="port-tag">Drone Cinematography · Feature Film</p>
+          <h3 class="port-title">Sathur — Tamil Feature Film (2022)</h3>
+          <p class="port-desc">Operated drone cinematography capturing dynamic aerial shots that elevated the film's visual storytelling.</p>
+        </div>
+      </div>
+
+      <div class="port-card" data-cat="drone">
+        <div class="video-wrap">
+          <div class="video-thumb" onclick="window.open('https://drive.google.com/file/d/1NKJopb_gCGYP8NT0QsSEwsFNkTRj3t2e/view','_blank')">
+            <img class="yt-thumb" src="https://img.youtube.com/vi/gGEkOC7UFHM/maxresdefault.jpg" alt="L&T">
+            <div class="play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+            <span class="thumb-label">Infrastructure · UAV Mapping</span>
+          </div>
+        </div>
+        <div class="port-info">
+          <p class="port-tag">UAV Mapping · Infrastructure</p>
+          <h3 class="port-title">L&T — Athikadavu Avinashi Project</h3>
+          <p class="port-desc">UAV Mapping &amp; GIS support for large-scale infrastructure using Pix4D and Civil 3D.</p>
+        </div>
+      </div>
+
+      <div class="port-card" data-cat="film">
+        <div class="video-wrap">
+          <div class="video-thumb" onclick="loadVid(this,'https://www.youtube.com/embed/1TYuajEccaw?autoplay=1&si=UQSZd39HsnhocTWh')">
+            <img class="yt-thumb" src="https://img.youtube.com/vi/1TYuajEccaw/maxresdefault.jpg" alt="Nenje">
+            <div class="play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+            <span class="thumb-label">Music Film</span>
+          </div>
+        </div>
+        <div class="port-info">
+          <p class="port-tag">Videography · Music</p>
+          <h3 class="port-title">Nenje — Song Film</h3>
+          <p class="port-desc">Full production music video — shot, directed and edited with cinematic storytelling.</p>
+        </div>
+      </div>
+
+      <div class="port-card" data-cat="drone">
+        <div class="video-wrap">
+          <div class="video-thumb" onclick="loadVid(this,'https://www.youtube.com/embed/FC0gNhiltvI?autoplay=1&si=Pa3gAoii0lsZB-z3')">
+            <img class="yt-thumb" src="https://img.youtube.com/vi/FC0gNhiltvI/maxresdefault.jpg" alt="FPV">
+            <div class="play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+            <span class="thumb-label">FPV Showreel</span>
+          </div>
+        </div>
+        <div class="port-info">
+          <p class="port-tag">FPV Piloting · Aerial Showreel</p>
+          <h3 class="port-title">FPV Drone Showreel</h3>
+          <p class="port-desc">High-speed FPV footage showcasing advanced technical piloting and cinematic aerial maneuvers.</p>
+        </div>
+      </div>
+
+      <div class="port-card" data-cat="film brand">
+        <div class="video-wrap">
+          <div class="video-thumb" onclick="loadVid(this,'https://www.youtube.com/embed/r4XKmtrqDpc?autoplay=1&si=AlwFQUMR8Si35AVI')">
+            <img class="yt-thumb" src="https://img.youtube.com/vi/r4XKmtrqDpc/maxresdefault.jpg" alt="Kari Sports">
+            <div class="play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+            <span class="thumb-label">Brand Commercial</span>
+          </div>
+        </div>
+        <div class="port-info">
+          <p class="port-tag">Advertising · Videography</p>
+          <h3 class="port-title">Kari Sports — Brand Video</h3>
+          <p class="port-desc">Commercial brand video produced end-to-end — concept, shoot and full post-production.</p>
+        </div>
+      </div>
+
+      <div class="port-card" data-cat="film brand">
+        <div class="video-wrap">
+          <div class="video-thumb" onclick="loadVid(this,'https://www.youtube.com/embed/WgE1Ya_CH04?autoplay=1&si=7Xue4F8_vm8Owvcz')">
+            <img class="yt-thumb" src="https://img.youtube.com/vi/WgE1Ya_CH04/maxresdefault.jpg" alt="RVG">
+            <div class="play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+            <span class="thumb-label">School Advertisement</span>
+          </div>
+        </div>
+        <div class="port-info">
+          <p class="port-tag">Advertising · Videography</p>
+          <h3 class="port-title">RVG Matric — Advertisement</h3>
+          <p class="port-desc">Full advertisement video — scripted, shot and edited for institutional outreach.</p>
+        </div>
+      </div>
+
+      <div class="port-card" data-cat="film brand">
+        <div class="video-wrap">
+          <div class="video-thumb" onclick="loadVid(this,'https://www.youtube.com/embed/4GLHTliYrec?autoplay=1&si=BAQfIaqATqkGuhnF')">
+            <img class="yt-thumb" src="https://img.youtube.com/vi/4GLHTliYrec/maxresdefault.jpg" alt="Unbottle">
+            <div class="play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+            <span class="thumb-label">Advertisement · Content</span>
+          </div>
+        </div>
+        <div class="port-info">
+          <p class="port-tag">Advertising · Content Writing</p>
+          <h3 class="port-title">The Unbottle — Advertisement</h3>
+          <p class="port-desc">Content writing, shot and edited advertisement for The Unbottle brand campaign.</p>
+        </div>
+      </div>
+
+      <div class="port-card" data-cat="ai brand">
+        <div class="video-wrap">
+          <div class="video-thumb" onclick="window.open('https://www.instagram.com/reel/DT9lqAXkYJ9/','_blank')">
+            <img class="yt-thumb" src="https://img.youtube.com/vi/xX5Qs1sAiPM/maxresdefault.jpg" alt="Carnot AI">
+            <div class="play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+            <span class="thumb-label">AI Content · Instagram</span>
+          </div>
+        </div>
+        <div class="port-info">
+          <p class="port-tag">AI Content · Brand Campaign</p>
+          <h3 class="port-title">Carnot Casuals — AI Video Campaign</h3>
+          <p class="port-desc">AI-generated video content and creative assets produced for Carnot Casuals' Instagram campaign.</p>
+          <a href="https://www.instagram.com/reel/DT9lqAXkYJ9/" target="_blank" class="port-link">View on Instagram →</a>
+        </div>
+      </div>
+
+      <div class="port-card" data-cat="brand">
+        <div class="static-thumb" style="background:linear-gradient(135deg,#0a1020,#0d1830)">
+          <div class="static-thumb-inner">
+            <img src="https://timepads.in/cdn/shop/files/Time-Logo-black_942d22d3-dc35-4d57-ac5c-ec5033b11d942.png?v=1772083325" style="max-width:110px;max-height:50px;object-fit:contain;filter:brightness(0) invert(1);opacity:.8" alt="Timepads" onerror="this.outerHTML='<span style=font-size:2rem>📦</span>'">
+          </div>
+        </div>
+        <div class="port-info">
+          <p class="port-tag">Branding · Product Packaging Design</p>
+          <h3 class="port-title">Timepads.in — Brand Identity &amp; Packaging</h3>
+          <p class="port-desc">Complete branding, product packaging design, and promotional banners from concept to final delivery.</p>
+          <a href="https://timepads.in" target="_blank" class="port-link">Visit Website →</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="clients">
+  <div class="container">
+    <div class="sec-head fade-in"><p class="sec-label">Trusted By</p><h2 class="sec-title">Client <span>Showcase</span></h2><div class="divider"></div></div>
+    <div class="clients-logo-grid fade-in">
+      <div class="client-logo-box"><img src="https://birdscale.com/wp-content/uploads/2025/07/birdscale_logo_header-1-e1755143615103.png" alt="Birdscale" onerror="this.style.display='none'"><div class="client-name">Birdscale Technologies</div></div>
+      <div class="client-logo-box"><img src="https://birdscale.com/wp-content/uploads/2025/08/LT-1.png" alt="L&T" onerror="this.style.display='none'"><div class="client-name">L&amp;T Infrastructure</div></div>
+      <div class="client-logo-box"><img src="https://static.wixstatic.com/media/51aaed_fe8fb21750334fd9a77c7891d600cc75~mv2.png/v1/fill/w_404,h_134,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Bioweal-logo-Finale-W.png" alt="Bioweal" onerror="this.style.display='none'"><div class="client-name">Bioweal Products</div></div>
+      <div class="client-logo-box"><div class="logo-placeholder">LOGO</div><div class="client-name">Film: Sathur</div></div>
+      <div class="client-logo-box"><img src="https://carnot.online/cdn/shop/files/new_Header_logo-cropped.svg?v=1771307511&width=135" alt="Carnot" onerror="this.style.display='none'"><div class="client-name">Carnot Casuals</div></div>
+      <div class="client-logo-box"><img src="https://timepads.in/cdn/shop/files/Time-Logo-black_942d22d3-dc35-4d57-ac5c-ec5033b11d942.png?v=1772083325" alt="Timepads" onerror="this.style.display='none'"><div class="client-name">Timepads.in</div></div>
+      <div class="client-logo-box"><img src="https://instagram.fblr24-2.fna.fbcdn.net/v/t51.2885-19/272639632_311676697576474_1427613447407036067_n.jpg?efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby43NTAuZXhwZXJpbWVudGFsIn0&_nc_ht=instagram.fblr24-2.fna.fbcdn.net&_nc_cat=110&_nc_oc=Q6cZ2gGtWzEOfbXjqcVkQgH-xTz9V2z7xka5q9_HE1lUlykoW9c5L1nB6CAw6XKkzH5h5aZBpygT7989DNKMhbvyYweX&_nc_ohc=s0cBqetMby4Q7kNvwFB6zDZ&_nc_gid=wFyScC52FYRBFoGKjOiPaw&edm=APoiHPcBAAAA&ccb=7-5&oh=00_AfxJrCIjGtRzemwwBJG51VPnnKCWyd8R-Tht7QlwwldA_Q&oe=69C891B3&_nc_sid=22de04" alt="Kari Sports" onerror="this.style.display='none'" style="border-radius:50%"><div class="client-name">Kari Sports</div></div>
+      <div class="client-logo-box"><img src="https://flykup.in/wp-content/uploads/2025/02/cropped-noun-mail-650805-3.jpg" alt="Flykup" onerror="this.style.display='none'"><div class="client-name">Flykup Media</div></div>
+      <div class="client-logo-box"><img src="https://cdn.prod.website-files.com/66062d63d37138dbbbe27448/66d173b58c05e209e44f5827_rvg%20logo.svg" alt="RVG" onerror="this.style.display='none'"><div class="client-name">RVG Matric School</div></div>
+      <div class="client-logo-box"><img src="https://instagram.fblr24-4.fna.fbcdn.net/v/t51.2885-19/102385227_2501662810146164_2067503793511071744_n.jpg?efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby4xMDgwLmMyIn0&_nc_ht=instagram.fblr24-4.fna.fbcdn.net&_nc_cat=108&_nc_oc=Q6cZ2gHIQBAumpfvdXGhb2k9bfEPLR0xeXLAo5e1qZ47yVoKnjoCyZu_v0irbq-XK7lymWrdL2dakLnQ1kF5iBafuMYD&_nc_ohc=l5v34U-VcKoQ7kNvwFPoS-T&_nc_gid=KM6VLEDoehkpmPKsIr7trg&edm=AP4sbd4BAAAA&ccb=7-5&oh=00_AfynAQmXAcu3bMls_5YN3w3nqiq9xpCKY30VEU5ttK-85g&oe=69C86AFD&_nc_sid=7a9f4b" alt="Pep Studios" onerror="this.style.display='none'" style="border-radius:50%"><div class="client-name">Pep Studios</div></div>
+      <div class="client-logo-box"><img src="https://www.unbottle.com/cdn/shop/files/Untitled_design_5_250x@2x.gif?v=1729764363" alt="Unbottle" onerror="this.style.display='none'"><div class="client-name">The Unbottle</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="experience">
+  <div class="container">
+    <div class="sec-head fade-in"><p class="sec-label">My Journey</p><h2 class="sec-title">Work <span>Experience</span></h2><div class="divider"></div></div>
+    <div class="timeline fade-in">
+      <div class="tl-item">
+        <p class="tl-period">Jun 2025 – Jan 2026</p>
+        <h3 class="tl-role">Graphic Designer</h3>
+        <p class="tl-company">Bioweal Products Private Limited — Bangalore, India</p>
+        <ul class="tl-pts"><li>Created visual content and brand materials for a health &amp; wellness product company.</li><li>Worked across Adobe Illustrator, Photoshop, Premiere Pro and After Effects.</li><li>Handled social media design, advertising visuals and product packaging.</li></ul>
+      </div>
+      <div class="tl-item">
+        <p class="tl-period">Jun 2023 – Jun 2025</p>
+        <h3 class="tl-role">Founder &amp; Creative Director</h3>
+        <p class="tl-company">Welkin Productions — Coimbatore / Bangalore, India</p>
+        <ul class="tl-pts"><li>Founded and led a production company delivering cinematic visuals, graphic designs and mapping projects.</li><li>Led client projects from concept to completion — branding, videos and 3D mapping solutions.</li><li>Oversaw a creative team ensuring brand consistency and quality across all deliverables.</li></ul>
+      </div>
+      <div class="tl-item">
+        <p class="tl-period">Mar 2019 – Jun 2025 · 6 yrs 4 mos</p>
+        <h3 class="tl-role">Drone Pilot &amp; R&D Specialist</h3>
+        <p class="tl-company">Birdscale Technologies — Coimbatore, Tamil Nadu</p>
+        <ul class="tl-pts"><li>Served as full-time Drone Pilot for 6+ years across commercial, infrastructure and film projects.</li><li>Led Research &amp; Development initiatives for UAV systems and drone innovation.</li><li>Contributed to technical advancement and field deployment of drone solutions.</li></ul>
+      </div>
+      <div class="tl-item">
+        <p class="tl-period">Jan 2020 – May 2023</p>
+        <h3 class="tl-role">Digital Creator (Part-Time)</h3>
+        <p class="tl-company">Pep Studios — Coimbatore</p>
+        <ul class="tl-pts"><li>Created graphic content for social media, marketing and corporate clients.</li><li>Designed motion graphics and short videos aligned with client brands.</li></ul>
+      </div>
+      <div class="tl-item">
+        <p class="tl-period">2022 – 2023</p>
+        <h3 class="tl-role">Drone Cinematographer</h3>
+        <p class="tl-company">Feature Film: Sathur</p>
+        <ul class="tl-pts"><li>Operated drone cinematography for the Tamil feature film Sathur.</li><li>Collaborated with the director and cinematography team to deliver cinematic aerial sequences.</li></ul>
+      </div>
+      <div class="tl-item">
+        <p class="tl-period">45 Days</p>
+        <h3 class="tl-role">Internship Trainee</h3>
+        <p class="tl-company">Flipkart</p>
+        <ul class="tl-pts"><li>Gained exposure to corporate operations, digital marketing and logistics.</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="container">
+    <div class="sec-head fade-in"><p class="sec-label">Let's Connect</p><h2 class="sec-title">Get In <span>Touch</span></h2><div class="divider"></div></div>
+    <div class="contact-grid fade-in">
+      <div class="contact-info">
+        <h3>Ready to create something extraordinary?</h3>
+        <p>Whether you need stunning visuals, drone footage, motion graphics, AI-powered content, or a complete brand identity — let's collaborate and bring your vision to life.</p>
+        <a class="c-item" href="mailto:santoskewinmelshack@gmail.com"><div class="c-icon">✉</div><div class="c-detail"><label>Email</label><span>santoskewinmelshack@gmail.com</span></div></a>
+        <a class="c-item" href="tel:+919566881468"><div class="c-icon">📱</div><div class="c-detail"><label>Phone</label><span>+91 9566881468</span></div></a>
+        <div class="c-item"><div class="c-icon">📍</div><div class="c-detail"><label>Location</label><span>Bangalore, India</span></div></div>
+        <a class="c-item" href="https://www.linkedin.com/in/santos-kewin-melshack-r-840762192" target="_blank"><div class="c-icon" style="font-size:.7rem;font-weight:700">in</div><div class="c-detail"><label>LinkedIn</label><span>santos-kewin-melshack-r</span></div></a>
+      </div>
+      <form class="cf" onsubmit="return false">
+        <div class="cf-row">
+          <div class="fg"><label>Name</label><input type="text" placeholder="Your name"></div>
+          <div class="fg"><label>Email</label><input type="email" placeholder="your@email.com"></div>
+        </div>
+        <div class="fg"><label>Subject</label><input type="text" placeholder="Project inquiry"></div>
+        <div class="fg"><label>Message</label><textarea placeholder="Tell me about your project..."></textarea></div>
+        <button type="submit" class="cf-btn">Send Message</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 <span>R. Santos Kewin Melshack</span> · Founder, <span>Welkin Productions</span> · Bangalore, India · <span>Visual Alchemist</span></p>
+</footer>
+
+<script>
+const cur=document.getElementById('cursor');
+const ring=document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px'});
+function animRing(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing)}
+animRing();
+document.querySelectorAll('a,button,.filter-btn,.video-thumb').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.transform='translate(-50%,-50%) scale(1.8)';ring.style.width='48px';ring.style.height='48px'});
+  el.addEventListener('mouseleave',()=>{cur.style.transform='translate(-50%,-50%) scale(1)';ring.style.width='32px';ring.style.height='32px'});
+});
+
+const canvas=document.getElementById('stars');
+const ctx=canvas.getContext('2d');
+let stars=[],comets=[];
+function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight}
+function initStars(){
+  stars=[];
+  for(let i=0;i<250;i++){stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.8+0.3,o:Math.random()*0.7+0.2,s:Math.random()*0.5+0.1,d:Math.random()>.5?1:-1,pulse:Math.random()*Math.PI*2})}
+}
+function spawnComet(){
+  if(comets.length<4){
+    const side=Math.random();
+    let x,y,vx,vy;
+    if(side<.5){x=Math.random()*canvas.width;y=0;vx=(Math.random()-.3)*4;vy=Math.random()*4+3}
+    else{x=0;y=Math.random()*canvas.height;vx=Math.random()*5+3;vy=(Math.random()-.3)*3}
+    comets.push({x,y,vx,vy,len:Math.random()*120+80,life:1,alpha:Math.random()*.8+.4})
+  }
+}
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  stars.forEach((s,i)=>{
+    s.pulse+=s.s*0.04;
+    s.o=0.3+Math.sin(s.pulse)*0.5;
+    if(s.o<0)s.o=0;
+    const grd=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*2.5);
+    grd.addColorStop(0,`rgba(180,230,255,${s.o})`);
+    grd.addColorStop(.5,`rgba(125,216,248,${s.o*.7})`);
+    grd.addColorStop(1,'rgba(125,216,248,0)');
+    ctx.beginPath();ctx.arc(s.x,s.y,s.r*2.5,0,Math.PI*2);ctx.fillStyle=grd;ctx.fill();
+    ctx.beginPath();ctx.arc(s.x,s.y,s.r*.5,0,Math.PI*2);ctx.fillStyle=`rgba(220,245,255,${s.o})`;ctx.fill();
+  });
+  comets.forEach((c,i)=>{
+    c.x+=c.vx;c.y+=c.vy;c.life-=0.012;
+    if(c.life<=0||c.x>canvas.width+200||c.y>canvas.height+200){comets.splice(i,1);return}
+    const angle=Math.atan2(c.vy,c.vx);
+    const tailX=c.x-Math.cos(angle)*c.len;
+    const tailY=c.y-Math.sin(angle)*c.len;
+    const grd=ctx.createLinearGradient(tailX,tailY,c.x,c.y);
+    grd.addColorStop(0,'rgba(125,216,248,0)');
+    grd.addColorStop(.6,`rgba(125,216,248,${c.alpha*c.life*.4})`);
+    grd.addColorStop(1,`rgba(200,240,255,${c.alpha*c.life})`);
+    ctx.beginPath();ctx.moveTo(tailX,tailY);ctx.lineTo(c.x,c.y);
+    ctx.strokeStyle=grd;ctx.lineWidth=1.5;ctx.stroke();
+    const hd=ctx.createRadialGradient(c.x,c.y,0,c.x,c.y,4);
+    hd.addColorStop(0,`rgba(255,255,255,${c.alpha*c.life})`);
+    hd.addColorStop(1,'rgba(125,216,248,0)');
+    ctx.beginPath();ctx.arc(c.x,c.y,4,0,Math.PI*2);ctx.fillStyle=hd;ctx.fill();
+  });
+  requestAnimationFrame(draw);
+}
+resize();initStars();draw();
+setInterval(spawnComet,2200);
+window.addEventListener('resize',()=>{resize();initStars()});
+
+const phrases=['Graphic Designer','Motion Graphics Artist','Drone Cinematographer','UAV Pilot & Innovator','AI Content Creator','Founder of Welkin Productions','Videographer','R&D Drone Specialist'];
+let pi=0,ci=0,del=false,wait=0;
+const el=document.getElementById('typed');
+function type(){
+  if(wait>0){wait--;setTimeout(type,50);return}
+  const cur=phrases[pi];
+  if(!del){if(ci<cur.length){el.textContent=cur.slice(0,++ci);setTimeout(type,80)}else{wait=28;del=true;setTimeout(type,50)}}
+  else{if(ci>0){el.textContent=cur.slice(0,--ci);setTimeout(type,38)}else{del=false;pi=(pi+1)%phrases.length;setTimeout(type,200)}}
+}
+type();
+
+function loadVid(thumb,src){
+  const wrap=thumb.parentElement;
+  const iframe=document.createElement('iframe');
+  iframe.src=src;
+  iframe.style.cssText='position:absolute;top:0;left:0;width:100%;height:100%;border:none';
+  iframe.allow='autoplay;encrypted-media';iframe.allowFullscreen=true;
+  wrap.replaceChild(iframe,thumb);
+}
+function filterPort(btn,cat){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.port-card').forEach(card=>{
+    const cats=card.dataset.cat||'';
+    card.style.display=(cat==='all'||cats.includes(cat))?'block':'none';
+  });
+}
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      e.target.querySelectorAll('.skill-fill,.ai-fill').forEach(b=>{setTimeout(()=>{b.style.width=b.dataset.width+'%'},200)});
+    }
+  })
+},{threshold:0.1});
+document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
+</script>
